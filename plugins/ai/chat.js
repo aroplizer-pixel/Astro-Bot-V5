@@ -288,16 +288,14 @@ const askAI = async (ctx) => {
                         temperature: modelName.includes('gemma') ? 1.0 : 2.0
                     };
 
-                    if (supportsThinking) {
-                        if (isGemini3) {
-                            generationConfig.thinkingConfig = {
-                                thinkingLevel: 'minimal'
-                            };
-                        } else if (isGemini25) {
-                            generationConfig.thinkingConfig = {
-                                thinkingBudget: 0
-                            };
-                        }
+                    if (modelName.includes('gemma') || isGemini3) {
+                        generationConfig.thinkingConfig = {
+                            thinkingLevel: 'MINIMAL'
+                        };
+                    } else if (isGemini25) {
+                        generationConfig.thinkingConfig = {
+                            thinkingBudget: 0
+                        };
                     }
 
                     if (currentIsAudioOutput) {
@@ -396,12 +394,10 @@ const askAI = async (ctx) => {
                              const maxAttempts = 2;
                              const generationConfig = (() => {
                                  const configObj = { temperature: modelName.includes('gemma') ? 1.0 : 2.0 };
-                                 if (supportsThinking) {
-                                     if (isGemini3) {
-                                         configObj.thinkingConfig = { thinkingLevel: 'minimal' };
-                                     } else if (isGemini25) {
-                                         configObj.thinkingConfig = { thinkingBudget: 0 };
-                                     }
+                                 if (modelName.includes('gemma') || isGemini3) {
+                                     configObj.thinkingConfig = { thinkingLevel: 'MINIMAL' };
+                                 } else if (isGemini25) {
+                                     configObj.thinkingConfig = { thinkingBudget: 0 };
                                  }
                                  return configObj;
                              })();
