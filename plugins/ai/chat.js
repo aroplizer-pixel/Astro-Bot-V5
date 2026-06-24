@@ -228,9 +228,10 @@ const askAI = async (ctx) => {
         if (hasGeminiKey) {
             const genAI = new GoogleGenerativeAI(config.geminiApiKey);
 
-            // تحديد النماذج لترتيب المحاولة (فقط gemma-4-31b-it)
-            const modelsToTry = ['gemma-4-31b-it'];
-            if (needsVoice) {
+            // نموذج gemma-4-31b-it لا يدعم مدخلات الصوت، لذلك نستخدم gemini-2.0-flash في حالة الصوت
+            let modelsToTry = ['gemma-4-31b-it'];
+            if (needsVoice || ctx.media?.type === 'audio') {
+                modelsToTry = ['gemini-2.0-flash'];
                 isAudioOutput = true;
             }
 
