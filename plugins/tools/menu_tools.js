@@ -1,6 +1,5 @@
 import { registerCommand, commands } from '../../lib/handler.js';
 import config from '../../config.js';
-import { prepareWAMessageMedia, generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
 import fs from 'fs';
 
 registerCommand('قسم_ادوات', async (ctx) => {
@@ -30,81 +29,15 @@ registerCommand('قسم_ادوات', async (ctx) => {
         text += `━━━━━━━━━━━━━━━━━━━━\n`;
         text += `🔙 أرسل *${config.prefix}المنيو* للرجوع للقائمة الرئيسية.`;
 
-        let mediaMessage = null;
-        try {
-            if (fs.existsSync('./assets/menu_banner.png')) {
-                mediaMessage = await prepareWAMessageMedia(
-                    { image: fs.readFileSync('./assets/menu_banner.png') },
-                    { upload: ctx.sock.waUploadToServer }
-                );
-            }
-        } catch (e) {
-            console.error("Failed to prepare menu banner:", e);
-        }
-
-        const rows = [
-            { title: "🔙 العودة للمنيو الرئيسي", description: "الرجوع للوحة التحكم الرئيسية", id: ".المنيو" },
-            { title: "🧠 قسم الذكاء الاصطناعي", description: "التحدث مع الذكاء الاصطناعي وتغيير الشخصيات والبحث", id: ".قسم_ذكاء" },
-            { title: "🎮 قسم الألعاب والتسلية", description: "الألعاب، التعدين، العمل، المبارزات والترتيب", id: ".قسم_العاب" },
-            { title: "⬇️ قسم التحميلات", description: "تحميل من يوتيوب، تيك توك، ومنصات الفيديو", id: ".قسم_تحميل" },
-            { title: "🎨 قسم الوسائط والملصقات", description: "صناعة الملصقات والتعديل والتحويلات", id: ".قسم_وسائط" },
-            { title: "🕌 قسم الإسلاميات والقرآن", description: "الأذكار اليومية ومواقيت الصلاة والقراء", id: ".قسم_islam" },
-            { title: "🛡️ قسم الجروبات والحماية", description: "أوامر حماية المجموعات ومنع الروابط والسبام", id: ".قسم_الجروبات" },
-            { title: "👑 قسم المالك والمطور", description: "أوامر التحكم الكامل وإحصائيات البوت للمالك", id: ".قسم_المالك" },
-            { title: "⚙️ القسم العام والإعدادات", description: "الأوامر العامة ومعلومات البوت والتشغيل", id: ".قسم_عام" }
-        ];
-
-        const listMessage = {
-            title: "⚙️ خيارات التنقل والعودة",
-            sections: [
-                {
-                    title: "ملاحة سريعة بين الأقسام",
-                    rows: rows
-                }
-            ]
-        };
-
-        const interactiveMsg = {
-            body: proto.Message.InteractiveMessage.Body.create({ text: text }),
-            footer: proto.Message.InteractiveMessage.Footer.create({ text: config.botName }),
-            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-                buttons: [
-                    {
-                        name: "single_select",
-                        buttonParamsJson: JSON.stringify(listMessage)
-                    }
-                ]
-            })
-        };
-
-        if (mediaMessage?.imageMessage) {
-            interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `🛠️ قسم الأدوات المساعدة`,
-                subtitle: "قائمة الأوامر",
-                hasMediaAttachment: true,
-                imageMessage: mediaMessage.imageMessage
-            });
+        const bannerPath = './assets/menu_banner.png';
+        if (fs.existsSync(bannerPath)) {
+            await ctx.sock.sendMessage(ctx.from, {
+                image: fs.readFileSync(bannerPath),
+                caption: text
+            }, { quoted: ctx.msg });
         } else {
-            interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `🛠️ قسم الأدوات المساعدة`,
-                hasMediaAttachment: false
-            });
+            await ctx.reply(text);
         }
-
-        const msg = generateWAMessageFromContent(ctx.from, {
-            viewOnceMessage: {
-                message: {
-                    messageContextInfo: {
-                        deviceListMetadata: {},
-                        deviceListMetadataVersion: 2
-                    },
-                    interactiveMessage: proto.Message.InteractiveMessage.create(interactiveMsg)
-                }
-            }
-        }, { quoted: ctx.msg });
-
-        await ctx.sock.relayMessage(ctx.from, msg.message, { messageId: msg.key.id });
-
     } catch (err) {
         console.error("فشل إرسال قسم الأدوات:", err);
         await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم الأدوات.");
