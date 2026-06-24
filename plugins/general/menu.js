@@ -16,7 +16,7 @@ function getRuntime(sec) {
     return parts.join(' و ');
 }
 
-// ⚔️ أمر المنيو الرئيسي الأزرار
+// ⚔️ أمر المنيو الرئيسي الأزرار (باستخدام الكاروسيل المستقر على جهاز العميل)
 registerCommand('المنيو', async (ctx) => {
     await ctx.react('📋');
 
@@ -40,7 +40,7 @@ registerCommand('المنيو', async (ctx) => {
             console.error("Failed to prepare menu banner media:", e);
         }
 
-        // بناء قائمة الأقسام لزر الخيارات مع توجيهها للأوامر الموزعة الجديدة
+        // بناء قائمة الأقسام لزر الخيارات
         const sections = [
             {
                 title: "📂 أقسام البوت التفاعلية",
@@ -92,27 +92,26 @@ registerCommand('المنيو', async (ctx) => {
         bodyText += `📅 *التاريخ:* ${new Date().toLocaleDateString('ar-EG')}\n\n`;
         bodyText += `🔹 *تصفّح أقسام الأوامر الآن عبر زر القائمة التفاعلية أدناه:*`;
 
-        const interactiveMsg = {
-            body: proto.Message.InteractiveMessage.Body.create({ text: bodyText }),
-            footer: proto.Message.InteractiveMessage.Footer.create({ text: `${config.botName} © 2026` }),
-            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-                buttons: buttons
-            })
-        };
-
-        if (mediaMessage?.imageMessage) {
-            interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `⚔️ لوحة تحكم ${config.botName}`,
-                subtitle: "المنيو الرئيسي",
-                hasMediaAttachment: true,
-                imageMessage: mediaMessage.imageMessage
-            });
-        } else {
-            interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `⚔️ لوحة تحكم ${config.botName}`,
-                hasMediaAttachment: false
-            });
-        }
+        // بناء بطاقة الكاروسيل للالتزام بالشكل المتوافق والعمل مع جهاز المستخدم
+        const cards = [
+            {
+                header: proto.Message.InteractiveMessage.Header.create({
+                    title: `⚔️ لوحة تحكم ${config.botName}`,
+                    subtitle: "المنيو الرئيسي",
+                    hasMediaAttachment: mediaMessage ? true : false,
+                    imageMessage: mediaMessage ? mediaMessage.imageMessage : null
+                }),
+                body: proto.Message.InteractiveMessage.Body.create({
+                    text: bodyText
+                }),
+                footer: proto.Message.InteractiveMessage.Footer.create({
+                    text: `${config.botName} © 2026`
+                }),
+                nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+                    buttons: buttons
+                })
+            }
+        ];
 
         const msg = generateWAMessageFromContent(ctx.from, {
             viewOnceMessage: {
@@ -121,7 +120,12 @@ registerCommand('المنيو', async (ctx) => {
                         deviceListMetadata: {},
                         deviceListMetadataVersion: 2
                     },
-                    interactiveMessage: proto.Message.InteractiveMessage.create(interactiveMsg)
+                    interactiveMessage: proto.Message.InteractiveMessage.create({
+                        body: proto.Message.InteractiveMessage.Body.create({ text: "القائمة الرئيسية" }),
+                        footer: proto.Message.InteractiveMessage.Footer.create({ text: config.botName }),
+                        header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
+                        carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.create({ cards: cards })
+                    })
                 }
             }
         }, { quoted: ctx.msg });
@@ -129,7 +133,7 @@ registerCommand('المنيو', async (ctx) => {
         await ctx.sock.relayMessage(ctx.from, msg.message, { messageId: msg.key.id });
 
     } catch (error) {
-        console.error('❌ خطأ في إرسال المنيو التفاعلي:', error.message);
+        console.error('❌ خطأ في إرسال المنيو التفاعلي الكاروسيل:', error.message);
         
         let fallbackText = `✨ ───『 *${config.botName.toUpperCase()}* 』─── ✨\n\n`;
         fallbackText += `👋 *أهلاً بك يا بطل! اكتب الأوامر التالية لتصفح الأقسام:*\n\n`;
