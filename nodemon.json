@@ -1,0 +1,14 @@
+{
+  "ignore": [
+    "data",
+    "data/**",
+    "session",
+    "session/**",
+    "scratch",
+    "scratch/**",
+    "*.json",
+    "*-player-script.js",
+    "*player-script.js"
+  ],
+  "ext": "js,html,css"
+}

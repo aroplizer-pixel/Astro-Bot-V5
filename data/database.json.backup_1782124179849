@@ -1,0 +1,26 @@
+{
+  "groups": {},
+  "users": {
+    "128080924405844@lid": {
+      "xp": 0,
+      "level": 1,
+      "wallet": 100,
+      "bank": 0,
+      "lastDaily": 0,
+      "warnings": 0,
+      "stocks": {
+        "btc": 0,
+        "gold": 0,
+        "aapl": 0,
+        "amzn": 0
+      },
+      "clan": null,
+      "aiPersona": "default",
+      "shield": 0,
+      "title": null,
+      "partner": null,
+      "inventory": []
+    }
+  },
+  "clans": {}
+}

@@ -1,0 +1,17 @@
+node_modules/
+session/
+data/
+scratch/
+test/
+*.log
+.env
+.env.*
+!.env.example
+.git/
+.gitignore
+.vscode/
+.idea/
+*.md
+Dockerfile
+docker-compose.yml
+.dockerignore

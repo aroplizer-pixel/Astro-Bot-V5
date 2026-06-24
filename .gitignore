@@ -1,0 +1,56 @@
+# ─── Dependencies ───
+node_modules/
+yarn.lock
+
+# ─── Environment & Secrets ───
+.env
+.env.local
+.env.*.local
+*.env
+!*.env.example
+
+# ─── Session & Auth (حساسة جداً) ───
+auth/
+creds.json
+
+# ─── Database & Data (خاصة بالبوت) ───
+data/database.json
+data/database.db
+data/database.db-journal
+data/database.db-wal
+data/database.db-shm
+data/backup/
+data/logs/
+data/temp/
+
+# ─── ملفات الاختبار والتجارب ───
+scratch/
+test/
+*.test.js
+*.spec.js
+
+# ─── Logs ───
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── OS & Editor ───
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Build & Cache ───
+.cache/
+dist/
+build/
+.eslintcache
+
+# ─── Docker volumes المحلية ───
+docker-data/
