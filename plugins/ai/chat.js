@@ -228,15 +228,10 @@ const askAI = async (ctx) => {
         if (hasGeminiKey) {
             const genAI = new GoogleGenerativeAI(config.geminiApiKey);
 
-            // تحديد النماذج لترتيب المحاولة (الأولوية لـ gemma-4-31b-it)
-            let modelsToTry = [];
+            // تحديد النماذج لترتيب المحاولة (فقط gemma-4-31b-it)
+            const modelsToTry = ['gemma-4-31b-it'];
             if (needsVoice) {
-                modelsToTry = ['gemini-2.0-flash-exp'];
                 isAudioOutput = true;
-            } else if (ctx.media) {
-                modelsToTry = ['gemini-2.0-flash'];
-            } else {
-                modelsToTry = ['gemma-4-31b-it', 'gemini-2.0-flash'];
             }
 
             // بناء سياق الرسائل والأجزاء للنموذج
