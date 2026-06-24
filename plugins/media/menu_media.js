@@ -3,9 +3,9 @@ import config from '../../config.js';
 import { prepareWAMessageMedia, generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
 import fs from 'fs';
 
-registerCommand('قسم_عام', async (ctx) => {
+registerCommand('قسم_وسائط', async (ctx) => {
     try {
-        const targetCategories = ['⚙️ عام'];
+        const targetCategories = ['🎨 وسائط وملصقات'];
         
         let categoryCmds = [];
         commands.forEach((cmd, name) => {
@@ -21,7 +21,7 @@ registerCommand('قسم_عام', async (ctx) => {
             return ctx.reply(`❌ لا توجد أوامر مسجلة في هذا القسم حالياً!`);
         }
 
-        let text = `✨ ───『 *أوامر القسم العام والإعدادات ⚙️* 』─── ✨\n\n`;
+        let text = `✨ ───『 *أوامر قسم الوسائط والملصقات 🎨* 』─── ✨\n\n`;
         text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         categoryCmds.forEach(c => {
@@ -47,11 +47,11 @@ registerCommand('قسم_عام', async (ctx) => {
             { title: "🧠 قسم الذكاء الاصطناعي", description: "التحدث مع الذكاء الاصطناعي وتغيير الشخصيات والبحث", id: ".قسم_ذكاء" },
             { title: "🎮 قسم الألعاب والتسلية", description: "الألعاب، التعدين، العمل، المبارزات والترتيب", id: ".قسم_العاب" },
             { title: "⬇️ قسم التحميلات", description: "تحميل من يوتيوب، تيك توك، ومنصات الفيديو", id: ".قسم_تحميل" },
-            { title: "🎨 قسم الوسائط والملصقات", description: "صناعة الملصقات والتعديل والتحويلات", id: ".قسم_وسائط" },
             { title: "🛠️ قسم الأدوات المساعدة", description: "الحاسبة والترجمة والطقس والـ QR", id: ".قسم_ادوات" },
             { title: "🕌 قسم الإسلاميات والقرآن", description: "الأذكار اليومية ومواقيت الصلاة والقراء", id: ".قسم_islam" },
             { title: "🛡️ قسم الجروبات والحماية", description: "أوامر حماية المجموعات ومنع الروابط والسبام", id: ".قسم_الجروبات" },
-            { title: "👑 قسم المالك والمطور", description: "أوامر التحكم الكامل وإحصائيات البوت للمالك", id: ".قسم_المالك" }
+            { title: "👑 قسم المالك والمطور", description: "أوامر التحكم الكامل وإحصائيات البوت للمالك", id: ".قسم_المالك" },
+            { title: "⚙️ القسم العام والإعدادات", description: "الأوامر العامة ومعلومات البوت والتشغيل", id: ".قسم_عام" }
         ];
 
         const listMessage = {
@@ -79,14 +79,14 @@ registerCommand('قسم_عام', async (ctx) => {
 
         if (mediaMessage?.imageMessage) {
             interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `⚙️ القسم العام والتشغيل`,
+                title: `🎨 قسم الوسائط والملصقات`,
                 subtitle: "قائمة الأوامر",
                 hasMediaAttachment: true,
                 imageMessage: mediaMessage.imageMessage
             });
         } else {
             interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `⚙️ القسم العام والتشغيل`,
+                title: `🎨 قسم الوسائط والملصقات`,
                 hasMediaAttachment: false
             });
         }
@@ -106,10 +106,10 @@ registerCommand('قسم_عام', async (ctx) => {
         await ctx.sock.relayMessage(ctx.from, msg.message, { messageId: msg.key.id });
 
     } catch (err) {
-        console.error("فشل إرسال قسم العام:", err);
-        await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم العام.");
+        console.error("فشل إرسال قسم الوسائط:", err);
+        await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم الوسائط.");
     }
 }, {
-    description: 'عرض أوامر القسم العام والإعدادات العامة بشكل نصي منسق',
-    category: '⚙️ عام'
+    description: 'عرض أوامر قسم الوسائط والملصقات بشكل نصي منسق',
+    category: '🎨 وسائط وملصقات'
 });

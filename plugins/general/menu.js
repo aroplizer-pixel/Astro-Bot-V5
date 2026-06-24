@@ -16,7 +16,7 @@ function getRuntime(sec) {
     return parts.join(' و ');
 }
 
-// ⚔️ أمر المنيو الرئيسي الأزرار (باستخدام الكاروسيل المستقر على جهاز العميل)
+// ⚔️ أمر المنيو الرئيسي الأزرار (باستخدام الكاروسيل المتوافق)
 registerCommand('المنيو', async (ctx) => {
     await ctx.react('📋');
 
@@ -40,16 +40,20 @@ registerCommand('المنيو', async (ctx) => {
             console.error("Failed to prepare menu banner media:", e);
         }
 
-        // بناء قائمة الأقسام لزر الخيارات
+        // بناء قائمة الأقسام لزر الخيارات مع الفئات التسعة المستقلة تماماً
         const sections = [
             {
                 title: "📂 أقسام البوت التفاعلية",
                 rows: [
                     { title: "🧠 قسم الذكاء الاصطناعي", description: "التحدث مع الذكاء الاصطناعي وتغيير الشخصيات والبحث", id: ".قسم_ذكاء" },
                     { title: "🎮 قسم الألعاب والتسلية", description: "الألعاب، التعدين، العمل، المبارزات والترتيب", id: ".قسم_العاب" },
-                    { title: "⬇️ قسم التحميلات والوسائط", description: "تحميل من يوتيوب، تيك توك، وملصقات وصور", id: ".قسم_تحميل" },
-                    { title: "🛠️ قسم الأدوات والإسلاميات", description: "الأذكار والقرآن، الحاسبة، الطقس والترجمة", id: ".قسم_ادوات" },
-                    { title: "⚙️ القسم العام والإدارة", description: "أوامر المجموعات والمشرفين وحماية الجروب", id: ".قسم_عام" }
+                    { title: "⬇️ قسم التحميلات", description: "تحميل من يوتيوب، تيك توك، ومنصات الفيديو", id: ".قسم_تحميل" },
+                    { title: "🎨 قسم الوسائط والملصقات", description: "صناعة الملصقات والتعديل والتحويلات", id: ".قسم_وسائط" },
+                    { title: "🛠️ قسم الأدوات المساعدة", description: "الحاسبة والترجمة والطقس والـ QR", id: ".قسم_ادوات" },
+                    { title: "🕌 قسم الإسلاميات والقرآن", description: "الأذكار اليومية ومواقيت الصلاة والقراء", id: ".قسم_islam" },
+                    { title: "🛡️ قسم الجروبات والحماية", description: "أوامر حماية المجموعات ومنع الروابط والسبام", id: ".قسم_الجروبات" },
+                    { title: "👑 قسم المالك والمطور", description: "أوامر التحكم الكامل وإحصائيات البوت للمالك", id: ".قسم_المالك" },
+                    { title: "⚙️ القسم العام والإعدادات", description: "الأوامر العامة ومعلومات البوت والتشغيل", id: ".قسم_عام" }
                 ]
             }
         ];
@@ -92,7 +96,7 @@ registerCommand('المنيو', async (ctx) => {
         bodyText += `📅 *التاريخ:* ${new Date().toLocaleDateString('ar-EG')}\n\n`;
         bodyText += `🔹 *تصفّح أقسام الأوامر الآن عبر زر القائمة التفاعلية أدناه:*`;
 
-        // بناء بطاقة الكاروسيل للالتزام بالشكل المتوافق والعمل مع جهاز المستخدم
+        // بناء بطاقة الكاروسيل للالتزام بالشكل المتوافق
         const cards = [
             {
                 header: proto.Message.InteractiveMessage.Header.create({
@@ -140,8 +144,12 @@ registerCommand('المنيو', async (ctx) => {
         fallbackText += `🧠 *.قسم_ذكاء* : الذكاء الاصطناعي\n`;
         fallbackText += `🎮 *.قسم_العاب* : الألعاب والتسلية\n`;
         fallbackText += `⬇️ *.قسم_تحميل* : تحميل الوسائط والملفات\n`;
-        fallbackText += `🛠️ *.قسم_ادوات* : الأدوات والإسلاميات\n`;
-        fallbackText += `⚙️ *.قسم_عام* : الإعدادات والمجموعات\n\n`;
+        fallbackText += `🎨 *.قسم_وسائط* : صناعة واستخراج الملصقات\n`;
+        fallbackText += `🛠️ *.قسم_ادوات* : الأدوات والآلات الحاسبة\n`;
+        fallbackText += `🕌 *.قسم_islam* : الإسلاميات ومواقيت الصلاة\n`;
+        fallbackText += `🛡️ *.قسم_الجروبات* : حماية وإدارة المجموعات\n`;
+        fallbackText += `👑 *.قسم_المالك* : أوامر المطور والمالك\n`;
+        fallbackText += `⚙️ *.قسم_عام* : الإعدادات العامة للبوت\n\n`;
         fallbackText += `━━━━━━━━━━━━━━━━━━━━`;
 
         const bannerPath = './assets/menu_banner.png';
@@ -171,7 +179,11 @@ registerCommand('قسم', async (ctx) => {
     if (cleanedQuery.includes('ذكاء')) cmdToExecute = 'قسم_ذكاء';
     else if (cleanedQuery.includes('العاب') || cleanedQuery.includes('ألعاب')) cmdToExecute = 'قسم_العاب';
     else if (cleanedQuery.includes('تحميل')) cmdToExecute = 'قسم_تحميل';
+    else if (cleanedQuery.includes('وسائط') || cleanedQuery.includes('ملصق')) cmdToExecute = 'قسم_وسائط';
     else if (cleanedQuery.includes('ادوات') || cleanedQuery.includes('أدوات')) cmdToExecute = 'قسم_ادوات';
+    else if (cleanedQuery.includes('اسلام') || cleanedQuery.includes('إسلام')) cmdToExecute = 'قسم_islam';
+    else if (cleanedQuery.includes('جروب') || cleanedQuery.includes('مجموع') || cleanedQuery.includes('حماي') || cleanedQuery.includes('ادارة')) cmdToExecute = 'قسم_الجروبات';
+    else if (cleanedQuery.includes('مالك') || cleanedQuery.includes('مطور')) cmdToExecute = 'قسم_المالك';
     else if (cleanedQuery.includes('عام')) cmdToExecute = 'قسم_عام';
 
     if (cmdToExecute) {

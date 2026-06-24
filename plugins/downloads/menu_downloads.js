@@ -1,10 +1,11 @@
 import { registerCommand, commands } from '../../lib/handler.js';
 import config from '../../config.js';
+import { prepareWAMessageMedia, generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
 import fs from 'fs';
 
 registerCommand('قسم_تحميل', async (ctx) => {
     try {
-        const targetCategories = ['⬇️ تحميلات', '🎨 وسائط وملصقات'];
+        const targetCategories = ['⬇️ تحميلات'];
         
         let categoryCmds = [];
         commands.forEach((cmd, name) => {
@@ -20,7 +21,7 @@ registerCommand('قسم_تحميل', async (ctx) => {
             return ctx.reply(`❌ لا توجد أوامر مسجلة في هذا القسم حالياً!`);
         }
 
-        let text = `✨ ───『 *أوامر قسم التحميلات والوسائط ⬇️* 』─── ✨\n\n`;
+        let text = `✨ ───『 *أوامر قسم التحميلات ⬇️* 』─── ✨\n\n`;
         text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         categoryCmds.forEach(c => {
@@ -29,20 +30,86 @@ registerCommand('قسم_تحميل', async (ctx) => {
         text += `━━━━━━━━━━━━━━━━━━━━\n`;
         text += `🔙 أرسل *${config.prefix}المنيو* للرجوع للقائمة الرئيسية.`;
 
-        const bannerPath = './assets/menu_banner.png';
-        if (fs.existsSync(bannerPath)) {
-            await ctx.sock.sendMessage(ctx.from, {
-                image: fs.readFileSync(bannerPath),
-                caption: text
-            }, { quoted: ctx.msg });
-        } else {
-            await ctx.reply(text);
+        let mediaMessage = null;
+        try {
+            if (fs.existsSync('./assets/menu_banner.png')) {
+                mediaMessage = await prepareWAMessageMedia(
+                    { image: fs.readFileSync('./assets/menu_banner.png') },
+                    { upload: ctx.sock.waUploadToServer }
+                );
+            }
+        } catch (e) {
+            console.error("Failed to prepare menu banner:", e);
         }
+
+        const rows = [
+            { title: "🔙 العودة للمنيو الرئيسي", description: "الرجوع للوحة التحكم الرئيسية", id: ".المنيو" },
+            { title: "🧠 قسم الذكاء الاصطناعي", description: "التحدث مع الذكاء الاصطناعي وتغيير الشخصيات والبحث", id: ".قسم_ذكاء" },
+            { title: "🎮 قسم الألعاب والتسلية", description: "الألعاب، التعدين، العمل، المبارزات والترتيب", id: ".قسم_العاب" },
+            { title: "🎨 قسم الوسائط والملصقات", description: "صناعة الملصقات والتعديل والتحويلات", id: ".قسم_وسائط" },
+            { title: "🛠️ قسم الأدوات المساعدة", description: "الحاسبة والترجمة والطقس والـ QR", id: ".قسم_ادوات" },
+            { title: "🕌 قسم الإسلاميات والقرآن", description: "الأذكار اليومية ومواقيت الصلاة والقراء", id: ".قسم_islam" },
+            { title: "🛡️ قسم الجروبات والحماية", description: "أوامر حماية المجموعات ومنع الروابط والسبام", id: ".قسم_الجروبات" },
+            { title: "👑 قسم المالك والمطور", description: "أوامر التحكم الكامل وإحصائيات البوت للمالك", id: ".قسم_المالك" },
+            { title: "⚙️ القسم العام والإعدادات", description: "الأوامر العامة ومعلومات البوت والتشغيل", id: ".قسم_عام" }
+        ];
+
+        const listMessage = {
+            title: "⚙️ خيارات التنقل والعودة",
+            sections: [
+                {
+                    title: "ملاحة سريعة بين الأقسام",
+                    rows: rows
+                }
+            ]
+        };
+
+        const interactiveMsg = {
+            body: proto.Message.InteractiveMessage.Body.create({ text: text }),
+            footer: proto.Message.InteractiveMessage.Footer.create({ text: config.botName }),
+            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+                buttons: [
+                    {
+                        name: "single_select",
+                        buttonParamsJson: JSON.stringify(listMessage)
+                    }
+                ]
+            })
+        };
+
+        if (mediaMessage?.imageMessage) {
+            interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
+                title: `⬇️ قسم التحميلات والتنزيل`,
+                subtitle: "قائمة الأوامر",
+                hasMediaAttachment: true,
+                imageMessage: mediaMessage.imageMessage
+            });
+        } else {
+            interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
+                title: `⬇️ قسم التحميلات والتنزيل`,
+                hasMediaAttachment: false
+            });
+        }
+
+        const msg = generateWAMessageFromContent(ctx.from, {
+            viewOnceMessage: {
+                message: {
+                    messageContextInfo: {
+                        deviceListMetadata: {},
+                        deviceListMetadataVersion: 2
+                    },
+                    interactiveMessage: proto.Message.InteractiveMessage.create(interactiveMsg)
+                }
+            }
+        }, { quoted: ctx.msg });
+
+        await ctx.sock.relayMessage(ctx.from, msg.message, { messageId: msg.key.id });
+
     } catch (err) {
         console.error("فشل إرسال قسم التحميلات:", err);
         await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم التحميلات.");
     }
 }, {
-    description: 'عرض أوامر قسم التحميلات والوسائط بشكل نصي منسق',
+    description: 'عرض أوامر قسم التحميلات بشكل نصي منسق',
     category: '⬇️ تحميلات'
 });

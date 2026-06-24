@@ -3,9 +3,9 @@ import config from '../../config.js';
 import { prepareWAMessageMedia, generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
 import fs from 'fs';
 
-registerCommand('قسم_عام', async (ctx) => {
+registerCommand('قسم_islam', async (ctx) => {
     try {
-        const targetCategories = ['⚙️ عام'];
+        const targetCategories = ['🕌 إسلاميات'];
         
         let categoryCmds = [];
         commands.forEach((cmd, name) => {
@@ -21,7 +21,7 @@ registerCommand('قسم_عام', async (ctx) => {
             return ctx.reply(`❌ لا توجد أوامر مسجلة في هذا القسم حالياً!`);
         }
 
-        let text = `✨ ───『 *أوامر القسم العام والإعدادات ⚙️* 』─── ✨\n\n`;
+        let text = `✨ ───『 *أوامر قسم الإسلاميات والقرآن الكريم 🕌* 』─── ✨\n\n`;
         text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         categoryCmds.forEach(c => {
@@ -49,9 +49,9 @@ registerCommand('قسم_عام', async (ctx) => {
             { title: "⬇️ قسم التحميلات", description: "تحميل من يوتيوب، تيك توك، ومنصات الفيديو", id: ".قسم_تحميل" },
             { title: "🎨 قسم الوسائط والملصقات", description: "صناعة الملصقات والتعديل والتحويلات", id: ".قسم_وسائط" },
             { title: "🛠️ قسم الأدوات المساعدة", description: "الحاسبة والترجمة والطقس والـ QR", id: ".قسم_ادوات" },
-            { title: "🕌 قسم الإسلاميات والقرآن", description: "الأذكار اليومية ومواقيت الصلاة والقراء", id: ".قسم_islam" },
             { title: "🛡️ قسم الجروبات والحماية", description: "أوامر حماية المجموعات ومنع الروابط والسبام", id: ".قسم_الجروبات" },
-            { title: "👑 قسم المالك والمطور", description: "أوامر التحكم الكامل وإحصائيات البوت للمالك", id: ".قسم_المالك" }
+            { title: "👑 قسم المالك والمطور", description: "أوامر التحكم الكامل وإحصائيات البوت للمالك", id: ".قسم_المالك" },
+            { title: "⚙️ القسم العام والإعدادات", description: "الأوامر العامة ومعلومات البوت والتشغيل", id: ".قسم_عام" }
         ];
 
         const listMessage = {
@@ -79,14 +79,14 @@ registerCommand('قسم_عام', async (ctx) => {
 
         if (mediaMessage?.imageMessage) {
             interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `⚙️ القسم العام والتشغيل`,
+                title: `🕌 قسم الإسلاميات والقرآن`,
                 subtitle: "قائمة الأوامر",
                 hasMediaAttachment: true,
                 imageMessage: mediaMessage.imageMessage
             });
         } else {
             interactiveMsg.header = proto.Message.InteractiveMessage.Header.create({
-                title: `⚙️ القسم العام والتشغيل`,
+                title: `🕌 قسم الإسلاميات والقرآن`,
                 hasMediaAttachment: false
             });
         }
@@ -106,10 +106,10 @@ registerCommand('قسم_عام', async (ctx) => {
         await ctx.sock.relayMessage(ctx.from, msg.message, { messageId: msg.key.id });
 
     } catch (err) {
-        console.error("فشل إرسال قسم العام:", err);
-        await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم العام.");
+        console.error("فشل إرسال قسم الإسلاميات:", err);
+        await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم الإسلاميات.");
     }
 }, {
-    description: 'عرض أوامر القسم العام والإعدادات العامة بشكل نصي منسق',
-    category: '⚙️ عام'
+    description: 'عرض أوامر قسم الإسلاميات والقرآن الكريم بشكل نصي منسق',
+    category: '🕌 إسلاميات'
 });
