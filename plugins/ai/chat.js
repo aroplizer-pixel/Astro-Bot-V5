@@ -228,15 +228,15 @@ const askAI = async (ctx) => {
         if (hasGeminiKey) {
             const genAI = new GoogleGenerativeAI(config.geminiApiKey);
 
-            // تحديد النماذج لترتيب المحاولة
+            // تحديد النماذج لترتيب المحاولة (الأولوية لـ gemma-4-31b-it)
             let modelsToTry = [];
             if (needsVoice) {
-                modelsToTry = ['gemini-2.0-flash-exp', 'gemini-1.5-flash'];
+                modelsToTry = ['gemini-2.0-flash-exp'];
                 isAudioOutput = true;
             } else if (ctx.media) {
-                modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+                modelsToTry = ['gemini-2.0-flash'];
             } else {
-                modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+                modelsToTry = ['gemma-4-31b-it', 'gemini-2.0-flash'];
             }
 
             // بناء سياق الرسائل والأجزاء للنموذج
@@ -277,7 +277,7 @@ const askAI = async (ctx) => {
 
                 const isGemini3 = modelName.includes('-3.1-') || modelName.includes('-3.5-') || modelName.includes('-3-');
                 const isGemini25 = modelName.includes('-2.5-');
-                const supportsThinking = (isGemini3 || isGemini25) && !modelName.includes('tts') && !modelName.includes('live') && !modelName.includes('gemma');
+                const supportsThinking = false; // الغاء وضع التفكير حتي يبقي سريع في الرد
 
                 try {
                     logger.info(`Trying Gemini model: ${modelName} (AudioOutput: ${currentIsAudioOutput})`);
