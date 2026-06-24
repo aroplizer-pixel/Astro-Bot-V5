@@ -63,7 +63,7 @@ async function start() {
         const sock = await connectToWhatsApp(handleMessage);
 
         // بدء جدولة التذكير التلقائي بالأذكار والآيات القرآنية
-        startAdhkarAutomation(sock);
+        startAdhkarAutomation();
         logger.success('✅ تم تشغيل نظام التذكير التلقائي بالأذكار!');
 
         logger.success('🎉 البوت يعمل الآن وجاهز للاستخدام!');
