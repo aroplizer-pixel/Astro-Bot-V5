@@ -57,18 +57,21 @@ registerCommand('المنيو', async (ctx) => {
         };
 
         const bodyText = `
-╭───「 👾 *${config.botName}* 」───╮
-│ 👤 *المطور:* ${config.ownerName}
-│ ⏱️ *وقت التشغيل:* ${uptime}
-│ 💾 *الرام المستهلك:* ${ram} MB / ${totalRam} GB
-│ 🖥️ *النظام:* ${platform}
-│ 📊 *إجمالي الأوامر:* ${totalCmds} أمر مفعّل
-╰─────────────────────╯
+✨ ───『 *${config.botName.toUpperCase()}* 』─── ✨
 
-👋 *مرحباً بك يا بطل!*
+👤 *المالِك:* ${config.ownerName}
+⏱️ *التشغيل:* ${uptime}
+💾 *الذاكرة:* ${ram} MB / ${totalRam} GB
+🖥️ *المنصة:* ${platform}
+📊 *الأوامر:* ${totalCmds} أمر نشط
+
+━━━━━━━━━━━━━━━━━━━━
+
+👋 *أهلاً بك يا بطل في لوحة التحكم!*
 📅 *التاريخ:* ${new Date().toLocaleDateString('ar-EG')}
 
-👇 *استخدم زر الاختيار أدناه للتنقل وتصفح الأقسام:*`.trim();
+🔹 *تصفّح الأقسام الآن عبر زر الاختيار أدناه:*
+━━━━━━━━━━━━━━━━━━━━`.trim();
 
         const cards = [
             {
@@ -125,9 +128,14 @@ registerCommand('المنيو', async (ctx) => {
         console.error('❌ خطأ في إرسال المنيو الكاروسيل:', error.message);
         
         // التراجع النصي البسيط في حال الفشل المطلق
-        let fallbackText = `⚔️ ─── [ لوحة تحكم ${config.botName} ] ─── ⚔️\n\n`;
-        fallbackText += `اكتب الأوامر التالية يدوياً لتصفح الأقسام:\n`;
-        fallbackText += `• *.قسم ذكاء*\n• *.قسم العاب*\n• *.قسم تحميل*\n• *.قسم ادوات*\n• *.قسم عام*`;
+        let fallbackText = `✨ ───『 *${config.botName.toUpperCase()}* 』─── ✨\n\n`;
+        fallbackText += `👋 *أهلاً بك يا بطل! اكتب الأوامر التالية لتصفح الأقسام:*\n\n`;
+        fallbackText += `🧠 *.قسم ذكاء* : الذكاء الاصطناعي\n`;
+        fallbackText += `🎮 *.قسم العاب* : الألعاب والتسلية\n`;
+        fallbackText += `⬇️ *.قسم تحميل* : تحميل الوسائط والملفات\n`;
+        fallbackText += `🛠️ *.قسم ادوات* : الأدوات والإسلاميات\n`;
+        fallbackText += `⚙️ *.قسم عام* : الإعدادات والمجموعات\n\n`;
+        fallbackText += `━━━━━━━━━━━━━━━━━━━━`;
         await ctx.sock.sendMessage(ctx.from, { text: fallbackText }, { quoted: ctx.msg });
     }
 }, {
@@ -178,11 +186,14 @@ registerCommand('قسم', async (ctx) => {
         return ctx.reply(`❌ لا توجد أوامر مسجلة في هذا القسم حالياً!`);
     }
 
-    // بناء النص المفصل للأوامر
-    let text = `🛡️ *أوامر قسم: [ ${targetCategories.join(' / ')} ]* 🛡️\n\n`;
+    // بناء النص المفصل للأوامر بشكل منسق وجذاب للغاية
+    let text = `✨ ───『 *أوامر قسم: ${targetCategories.join(' / ')}* 』─── ✨\n\n`;
+    text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
+    text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
     categoryCmds.forEach(c => {
-        text += `• *${config.prefix}${c.name}* : ${c.description}\n`;
+        text += `🔹 *${config.prefix}${c.name}*\n   └─ 📝 ${c.description}\n\n`;
     });
+    text += `━━━━━━━━━━━━━━━━━━━━`;
 
     try {
         // تحميل صورة البانر
