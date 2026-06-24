@@ -170,29 +170,40 @@ const addMessageToHistory = (from, role, content) => {
 const askAI = async (ctx) => {
     let query = ctx.args.join(' ');
 
+    logger.info(`[askAI Debug] Incoming request. Query: "${query}", Media: ${ctx.media ? JSON.stringify({ type: ctx.media.type, mimeType: ctx.media.mimeType, bufferLength: ctx.media.buffer?.length }) : 'undefined'}`);
+
     // تحويل ريكورد الصوت الوارد إلى نص باستخدام Deepgram
     if (ctx.media?.type === 'audio') {
+        logger.info(`[askAI Debug] Audio detected. Running transcription...`);
         try {
             await ctx.react('⏳');
+            logger.info(`[askAI Debug] Sending post request to Deepgram API...`);
             const response = await axios.post(
                 'https://api.deepgram.com/v1/listen?model=nova-2&smart_format=true',
                 ctx.media.buffer,
                 {
                     headers: {
                         'Authorization': `Token ${config.deepgramApiKey || '303945c1917fbf76bf96e484f80a9ec04b4a5e60'}`,
-                        'Content-Type': ctx.media.mimeType || 'audio/ogg'
+                        'Content-Type': 'application/octet-stream'
                     },
                     timeout: 15000
                 }
             );
             const transcript = response.data?.results?.channels?.[0]?.alternatives?.[0]?.transcript || '';
+            logger.info(`[askAI Debug] Deepgram response received. Raw transcript: "${transcript}"`);
             if (transcript) {
                 logger.info(`[Deepgram] Transcribed audio: "${transcript}"`);
                 query = query ? `${query} (${transcript})` : transcript;
+            } else {
+                logger.warn(`[askAI Debug] Deepgram transcript is empty.`);
             }
         } catch (dgErr) {
-            logger.error('Deepgram transcription failed:', dgErr.response?.data || dgErr.message);
+            logger.error('[askAI Debug] Deepgram transcription failed:', dgErr.response?.data || dgErr.message);
         }
+    }
+
+    if (ctx.media?.type === 'audio' && !query) {
+        return ctx.reply('يا صاحبي، مقدرتش أترجم الريكورد ده لنص أو أفهمه. ياريت تبعت ريكورد تاني بصوت أوضح أو تكتب سؤالك! 🎙️');
     }
 
     if (!query && !ctx.media) {
