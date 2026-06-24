@@ -53,6 +53,7 @@ export default {
     openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
     lolhumanApiKey: process.env.LOLHUMAN_API_KEY || '',
     betabotzApiKey: process.env.BETABOTZ_API_KEY || '',
+    deepgramApiKey: process.env.DEEPGRAM_API_KEY || '303945c1917fbf76bf96e484f80a9ec04b4a5e60',
 
     // ─── إعدادات الحماية الافتراضية للجروبات الجديدة ───
     security: {

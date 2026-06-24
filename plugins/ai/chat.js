@@ -168,7 +168,33 @@ const addMessageToHistory = (from, role, content) => {
 
 // 1. أمر التحدث مع الذكاء الاصطناعي
 const askAI = async (ctx) => {
-    const query = ctx.args.join(' ');
+    let query = ctx.args.join(' ');
+
+    // تحويل ريكورد الصوت الوارد إلى نص باستخدام Deepgram
+    if (ctx.media?.type === 'audio') {
+        try {
+            await ctx.react('⏳');
+            const response = await axios.post(
+                'https://api.deepgram.com/v1/listen?model=nova-2&smart_format=true',
+                ctx.media.buffer,
+                {
+                    headers: {
+                        'Authorization': `Token ${config.deepgramApiKey || '303945c1917fbf76bf96e484f80a9ec04b4a5e60'}`,
+                        'Content-Type': ctx.media.mimeType || 'audio/ogg'
+                    },
+                    timeout: 15000
+                }
+            );
+            const transcript = response.data?.results?.channels?.[0]?.alternatives?.[0]?.transcript || '';
+            if (transcript) {
+                logger.info(`[Deepgram] Transcribed audio: "${transcript}"`);
+                query = query ? `${query} (${transcript})` : transcript;
+            }
+        } catch (dgErr) {
+            logger.error('Deepgram transcription failed:', dgErr.response?.data || dgErr.message);
+        }
+    }
+
     if (!query && !ctx.media) {
         return ctx.reply('❌ يرجى كتابة سؤال أو إرفاق صورة/تسجيل صوتي للبوت!');
     }
@@ -228,10 +254,9 @@ const askAI = async (ctx) => {
         if (hasGeminiKey) {
             const genAI = new GoogleGenerativeAI(config.geminiApiKey);
 
-            // نموذج gemma-4-31b-it لا يدعم مدخلات الصوت، لذلك نستخدم gemini-2.0-flash في حالة الصوت
-            let modelsToTry = ['gemma-4-31b-it'];
-            if (needsVoice || ctx.media?.type === 'audio') {
-                modelsToTry = ['gemini-2.0-flash'];
+            // تحديد النماذج لترتيب المحاولة (فقط gemma-4-31b-it)
+            const modelsToTry = ['gemma-4-31b-it'];
+            if (needsVoice) {
                 isAudioOutput = true;
             }
 
@@ -246,12 +271,16 @@ const askAI = async (ctx) => {
 
             const currentParts = [];
             if (ctx.media) {
-                currentParts.push({
-                    inlineData: {
-                        data: ctx.media.buffer.toString('base64'),
-                        mimeType: ctx.media.mimeType
-                    }
-                });
+                // gemma-4-31b-it لا يدعم مدخلات الصوت كبيانات ثنائية، لذا نتجنب إرسال ملف الصوت لتفادي خطأ 400
+                const isAudio = ctx.media.type === 'audio';
+                if (!isAudio) {
+                    currentParts.push({
+                        inlineData: {
+                            data: ctx.media.buffer.toString('base64'),
+                            mimeType: ctx.media.mimeType
+                        }
+                    });
+                }
             }
             if (fullQuery) {
                 currentParts.push({ text: fullQuery });
