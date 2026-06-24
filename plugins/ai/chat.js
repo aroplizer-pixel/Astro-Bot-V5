@@ -6,6 +6,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { logger } from '../../lib/logger.js';
 import { transcodeAudioToOpus } from '../../lib/transcoder.js';
 import { generateContentLive } from '../../lib/live_gemini.js';
+import { searchWeb } from '../../lib/search.js';
 
 // تعريف الشخصيات والتعديل المصاحب للموجه (Prompt Modifiers)
 const personas = {
@@ -210,6 +211,50 @@ const askAI = async (ctx) => {
         return ctx.reply('❌ يرجى كتابة سؤال أو إرفاق صورة/تسجيل صوتي للبوت!');
     }
 
+    // 🔍 معالجة وتحديد ما إذا كان المستخدم يريد البحث في الإنترنت
+    let isSearchQuery = ctx.isSearchEnforced || false;
+    let searchQuery = query;
+
+    if (!isSearchQuery && query) {
+        const searchPrefixes = [
+            /^ابحث في النت عن\s+/i,
+            /^ابحث عن\s+/i,
+            /^ابحث\s+/i,
+            /^بحث عن\s+/i,
+            /^بحث\s+/i,
+            /^search for\s+/i,
+            /^search\s+/i,
+            /^google\s+/i
+        ];
+
+        for (const prefix of searchPrefixes) {
+            if (prefix.test(query)) {
+                isSearchQuery = true;
+                searchQuery = query.replace(prefix, '').trim();
+                break;
+            }
+        }
+    }
+
+    let searchContext = '';
+    if (isSearchQuery && searchQuery) {
+        try {
+            await ctx.react('🔍');
+            const searchResults = await searchWeb(searchQuery);
+            if (searchResults && searchResults.length > 0) {
+                searchContext = `[سياق البحث من الإنترنت لمساعدة الإجابة على سؤال المستخدم]\n`;
+                searchResults.forEach((res, index) => {
+                    searchContext += `المصدر ${index + 1}: ${res.title}\nالرابط: ${res.link}\nالملخص: ${res.snippet}\n\n`;
+                });
+                logger.info(`[Search] Injected ${searchResults.length} search results into prompt.`);
+            } else {
+                logger.warn(`[Search] No search results found for query: "${searchQuery}"`);
+            }
+        } catch (searchErr) {
+            logger.error('[Search] Error fetching web search results:', searchErr.message);
+        }
+    }
+
     // التحقق من وجود أي مفتاح مفعّل
     const hasGeminiKey = config.geminiApiKey && config.geminiApiKey.trim() !== '';
     const hasOpenRouterKey = config.openrouterApiKey && config.openrouterApiKey.trim() !== '';
@@ -243,7 +288,12 @@ const askAI = async (ctx) => {
 
         const persona = personas[activePersonaKey] || personas.default;
         const systemPrompt = persona.systemPrompt || personas.default.systemPrompt;
-        const fullQuery = persona.prefix ? (persona.prefix + query) : query;
+        
+        let finalQuery = query;
+        if (searchContext) {
+            finalQuery = `${searchContext}\nسؤال المستخدم الحالي: ${query}\n\nتعليمات الإجابة: أجب بالعامية المصرية بناءً على نتائج البحث السابقة، واذكر روابط المصادر بشكل فخم ومرتب بدون إطالة تفقد طبيعية الشات.`;
+        }
+        const fullQuery = persona.prefix ? (persona.prefix + finalQuery) : finalQuery;
 
         // التحقق من تفعيل طلب الرد الصوتي (TTS)
         const queryLower = query.toLowerCase();
@@ -641,4 +691,20 @@ registerCommand('ردتلقائي', async (ctx) => {
     description: 'تفعيل أو تعطيل الرد التلقائي بالذكاء الاصطناعي',
     category: '🧠 ذكاء اصطناعي',
     groupOnly: true
+});
+
+// 4. أوامر البحث في الإنترنت
+const askSearchAI = async (ctx) => {
+    ctx.isSearchEnforced = true;
+    await askAI(ctx);
+};
+
+registerCommand('ابحث', askSearchAI, {
+    description: 'البحث في الإنترنت والحصول على إجابات مباشرة ومحدثة بالذكاء الاصطناعي',
+    category: '🧠 ذكاء اصطناعي'
+});
+
+registerCommand('بحث', askSearchAI, {
+    description: 'البحث في الإنترنت والحصول على إجابات بالذكاء الاصطناعي',
+    category: '🧠 ذكاء اصطناعي'
 });
