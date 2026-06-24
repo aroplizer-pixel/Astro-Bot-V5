@@ -179,7 +179,7 @@ const askAI = async (ctx) => {
             await ctx.react('⏳');
             logger.info(`[askAI Debug] Sending post request to Deepgram API...`);
             const response = await axios.post(
-                'https://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&language=ar',
+                'https://api.deepgram.com/v1/listen?model=nova-3&smart_format=true&language=ar-EG',
                 ctx.media.buffer,
                 {
                     headers: {
