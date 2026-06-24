@@ -33,7 +33,7 @@ registerCommand('المنيو', async (ctx) => {
 
         // تحميل صورة البانر الملكي
         let mediaMessage = await prepareWAMessageMedia(
-            { image: fs.readFileSync('./data/menu_banner.png') },
+            { image: fs.readFileSync('./assets/menu_banner.png') },
             { upload: ctx.sock.waUploadToServer }
         );
 
@@ -187,7 +187,7 @@ registerCommand('قسم', async (ctx) => {
     try {
         // تحميل صورة البانر
         let mediaMessage = await prepareWAMessageMedia(
-            { image: fs.readFileSync('./data/menu_banner.png') },
+            { image: fs.readFileSync('./assets/menu_banner.png') },
             { upload: ctx.sock.waUploadToServer }
         );
 
