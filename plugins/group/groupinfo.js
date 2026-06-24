@@ -6,7 +6,7 @@ import { formatDuration } from '../../lib/utils.js';
 registerCommand('معلومات_الجروب', async (ctx) => {
     try {
         const meta = await ctx.sock.groupMetadata(ctx.from);
-        const admins = meta.participants.filter(p => p.admin !== null);
+        const admins = meta.participants.filter(p => p.admin === 'admin' || p.admin === 'superadmin');
         const owner = meta.participants.find(p => p.admin === 'superadmin' || p.admin === 'admin' && p.id === meta.owner);
 
         let info = `👥 *معلومات المجموعة*\n\n`;

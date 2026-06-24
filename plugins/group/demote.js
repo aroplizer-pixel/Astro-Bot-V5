@@ -9,6 +9,10 @@ registerCommand('تنزيل', async (ctx) => {
         target = ctx.msg.message.extendedTextMessage.contextInfo.participant;
     }
 
+    if (target) {
+        target = target.split('@')[0].split(':')[0] + '@s.whatsapp.net';
+    }
+
     if (!target) {
         return ctx.reply('❌ يرجى الإشارة للعضو (منشن) أو الرد على رسالته لتنزيله!');
     }

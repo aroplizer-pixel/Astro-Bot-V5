@@ -637,9 +637,11 @@ registerCommand('شخصية', async (ctx) => {
     }
 
     if (ctx.isGroup) {
-        const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
-        const admins = groupMetadata.participants.filter(p => p.admin !== null).map(p => p.id);
-        const isSenderAdmin = admins.includes(ctx.sender);
+        const cleanSender = ctx.sender ? (ctx.sender.split('@')[0].split(':')[0] + '@s.whatsapp.net') : '';
+        const admins = groupMetadata.participants
+            .filter(p => p.admin === 'admin' || p.admin === 'superadmin')
+            .map(p => p.id.split('@')[0].split(':')[0] + '@s.whatsapp.net');
+        const isSenderAdmin = admins.includes(cleanSender);
 
         if (!isSenderAdmin && !ctx.isOwner) {
             return ctx.reply('❌ تغيير شخصية البوت في المجموعة يقتصر على المشرفين فقط!');
@@ -667,9 +669,11 @@ registerCommand('رد_تلقائي', async (ctx) => {
         return ctx.reply('❌ هذا الأمر يمكن استخدامه في المجموعات فقط!');
     }
 
-    const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
-    const admins = groupMetadata.participants.filter(p => p.admin !== null).map(p => p.id);
-    const isSenderAdmin = admins.includes(ctx.sender);
+    const cleanSender = ctx.sender ? (ctx.sender.split('@')[0].split(':')[0] + '@s.whatsapp.net') : '';
+    const admins = groupMetadata.participants
+        .filter(p => p.admin === 'admin' || p.admin === 'superadmin')
+        .map(p => p.id.split('@')[0].split(':')[0] + '@s.whatsapp.net');
+    const isSenderAdmin = admins.includes(cleanSender);
 
     if (!isSenderAdmin && !ctx.isOwner) {
         return ctx.reply('❌ تشغيل الرد التلقائي يقتصر على مشرفي المجموعة فقط!');
