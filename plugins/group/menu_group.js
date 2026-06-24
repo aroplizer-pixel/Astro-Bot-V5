@@ -11,7 +11,7 @@ registerCommand('قسم_الجروبات', async (ctx) => {
             if (name === 'help' || name === 'الاوامر' || name === 'ردتلقائي' || name === 'بحث' || name === 'بوت') {
                 return;
             }
-            if (targetCategories.includes(cmd.category)) {
+            if (targetCategories.includes(cmd.category) || name === 'رد_تلقائي') {
                 categoryCmds.push({ name, description: cmd.description });
             }
         });
