@@ -637,6 +637,7 @@ registerCommand('شخصية', async (ctx) => {
     }
 
     if (ctx.isGroup) {
+        const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
         const cleanSender = ctx.sender ? (ctx.sender.split('@')[0].split(':')[0] + '@s.whatsapp.net') : '';
         const admins = groupMetadata.participants
             .filter(p => p.admin === 'admin' || p.admin === 'superadmin')
@@ -669,6 +670,7 @@ registerCommand('رد_تلقائي', async (ctx) => {
         return ctx.reply('❌ هذا الأمر يمكن استخدامه في المجموعات فقط!');
     }
 
+    const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
     const cleanSender = ctx.sender ? (ctx.sender.split('@')[0].split(':')[0] + '@s.whatsapp.net') : '';
     const admins = groupMetadata.participants
         .filter(p => p.admin === 'admin' || p.admin === 'superadmin')

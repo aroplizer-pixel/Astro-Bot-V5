@@ -30,7 +30,7 @@ const showLeaderboard = async (ctx) => {
         const mentions = [];
         const medals = ['🥇', '🥈', '🥉'];
         topTen.forEach((user, idx) => {
-            const userNum = user.jid.split('@')[0];
+            const userNum = user.jid.split('@')[0].split(':')[0];
             const medal = medals[idx] || `${idx + 1}.`;
             boardText += `${medal} @${userNum}\n   📊 المستوى: *${user.level}* | الخبرة: *${user.xp} XP*\n\n`;
             mentions.push(user.jid);
@@ -73,7 +73,7 @@ registerCommand('الاغنى', async (ctx) => {
         const mentions = [];
         const medals = ['🥇', '🥈', '🥉'];
         top.forEach((u, idx) => {
-            const num = u.jid.split('@')[0];
+            const num = u.jid.split('@')[0].split(':')[0];
             const medal = medals[idx] || `${idx + 1}.`;
             text += `${medal} @${num}\n   💵 *${u.wallet.toLocaleString()}* عملة\n\n`;
             mentions.push(u.jid);

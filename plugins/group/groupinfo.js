@@ -15,7 +15,7 @@ registerCommand('معلومات_الجروب', async (ctx) => {
         info += `👥 *عدد الأعضاء:* ${meta.participants.length}\n`;
         info += `🛡️ *عدد المشرفين:* ${admins.length}\n`;
         if (meta.owner) {
-            info += `👑 *المالك:* @${meta.owner.split('@')[0]}\n`;
+            info += `👑 *المالك:* @${meta.owner.split('@')[0].split(':')[0]}\n`;
         }
         if (meta.creation) {
             const createdDate = new Date(meta.creation * 1000).toLocaleDateString('ar-EG');
@@ -165,7 +165,7 @@ registerCommand('بروفايل_جروب', async (ctx) => {
 
     try {
         const pfpUrl = await ctx.sock.profilePictureUrl(targetJid, 'image').catch(() => null);
-        const number = targetJid.split('@')[0];
+        const number = targetJid.split('@')[0].split(':')[0];
 
         if (pfpUrl) {
             const response = await (await import('axios')).default.get(pfpUrl, { responseType: 'arraybuffer', timeout: 10000 });

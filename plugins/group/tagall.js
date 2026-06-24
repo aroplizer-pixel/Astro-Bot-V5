@@ -13,8 +13,9 @@ registerCommand('الكل', async (ctx) => {
 
     const mentions = [];
     participants.forEach((p, index) => {
-        tagMessage += `${index + 1}. @${p.id.split('@')[0]}\n`;
-        mentions.push(p.id);
+        const cleanJid = p.id.split('@')[0].split(':')[0] + '@s.whatsapp.net';
+        tagMessage += `${index + 1}. @${cleanJid.split('@')[0]}\n`;
+        mentions.push(cleanJid);
     });
 
     await ctx.sock.sendMessage(ctx.from, {
