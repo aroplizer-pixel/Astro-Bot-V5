@@ -11,6 +11,7 @@ yarn.lock
 
 # ─── Session & Auth (حساسة جداً) ───
 auth/
+session/
 
 # ─── Database & Data (خاصة بالبوت) ───
 data/database.json
