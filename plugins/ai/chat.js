@@ -640,9 +640,13 @@ registerCommand('شخصية', async (ctx) => {
     if (ctx.isGroup) {
         const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
         const cleanSender = cleanJid(ctx.sender);
-        const admins = groupMetadata.participants
-            .filter(p => p.admin === 'admin' || p.admin === 'superadmin')
-            .map(p => cleanJid(p.id));
+        const admins = [];
+        groupMetadata.participants.forEach(p => {
+            if (p.admin === 'admin' || p.admin === 'superadmin') {
+                if (p.id) admins.push(cleanJid(p.id));
+                if (p.lid) admins.push(cleanJid(p.lid));
+            }
+        });
         const isSenderAdmin = admins.includes(cleanSender);
 
         if (!isSenderAdmin && !ctx.isOwner) {
@@ -673,9 +677,13 @@ registerCommand('رد_تلقائي', async (ctx) => {
 
     const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
     const cleanSender = cleanJid(ctx.sender);
-    const admins = groupMetadata.participants
-        .filter(p => p.admin === 'admin' || p.admin === 'superadmin')
-        .map(p => cleanJid(p.id));
+    const admins = [];
+    groupMetadata.participants.forEach(p => {
+        if (p.admin === 'admin' || p.admin === 'superadmin') {
+            if (p.id) admins.push(cleanJid(p.id));
+            if (p.lid) admins.push(cleanJid(p.lid));
+        }
+    });
     const isSenderAdmin = admins.includes(cleanSender);
 
     if (!isSenderAdmin && !ctx.isOwner) {
