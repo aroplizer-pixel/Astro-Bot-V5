@@ -1,5 +1,6 @@
 import { registerCommand, commands } from '../../lib/handler.js';
 import { database } from '../../lib/db.js';
+import { cleanJid } from '../../lib/utils.js';
 import config from '../../config.js';
 import axios from 'axios';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -638,10 +639,10 @@ registerCommand('شخصية', async (ctx) => {
 
     if (ctx.isGroup) {
         const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
-        const cleanSender = ctx.sender ? (ctx.sender.split('@')[0].split(':')[0] + '@s.whatsapp.net') : '';
+        const cleanSender = cleanJid(ctx.sender);
         const admins = groupMetadata.participants
             .filter(p => p.admin === 'admin' || p.admin === 'superadmin')
-            .map(p => p.id.split('@')[0].split(':')[0] + '@s.whatsapp.net');
+            .map(p => cleanJid(p.id));
         const isSenderAdmin = admins.includes(cleanSender);
 
         if (!isSenderAdmin && !ctx.isOwner) {
@@ -671,10 +672,10 @@ registerCommand('رد_تلقائي', async (ctx) => {
     }
 
     const groupMetadata = await ctx.sock.groupMetadata(ctx.from);
-    const cleanSender = ctx.sender ? (ctx.sender.split('@')[0].split(':')[0] + '@s.whatsapp.net') : '';
+    const cleanSender = cleanJid(ctx.sender);
     const admins = groupMetadata.participants
         .filter(p => p.admin === 'admin' || p.admin === 'superadmin')
-        .map(p => p.id.split('@')[0].split(':')[0] + '@s.whatsapp.net');
+        .map(p => cleanJid(p.id));
     const isSenderAdmin = admins.includes(cleanSender);
 
     if (!isSenderAdmin && !ctx.isOwner) {

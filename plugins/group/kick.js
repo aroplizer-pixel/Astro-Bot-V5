@@ -1,4 +1,5 @@
 import { registerCommand } from '../../lib/handler.js';
+import { cleanJid } from '../../lib/utils.js';
 
 registerCommand('طرد', async (ctx) => {
     let target = ctx.args[0] ? (ctx.args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net') : null;
@@ -11,7 +12,7 @@ registerCommand('طرد', async (ctx) => {
     }
 
     if (target) {
-        target = target.split('@')[0].split(':')[0] + '@s.whatsapp.net';
+        target = cleanJid(target);
     }
 
     if (!target) {
