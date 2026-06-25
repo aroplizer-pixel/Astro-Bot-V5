@@ -1,6 +1,5 @@
 import { registerCommand, commands } from '../../lib/handler.js';
 import config from '../../config.js';
-import fs from 'fs';
 
 registerCommand('قسم_تحميل', async (ctx) => {
     try {
@@ -8,9 +7,7 @@ registerCommand('قسم_تحميل', async (ctx) => {
         
         let categoryCmds = [];
         commands.forEach((cmd, name) => {
-            if (name === 'help' || name === 'الاوامر' || name === 'ردتلقائي' || name === 'بحث' || name === 'بوت') {
-                return;
-            }
+            if (name === 'help' || name === 'الاوامر') return;
             if (targetCategories.includes(cmd.category)) {
                 categoryCmds.push({ name, description: cmd.description });
             }
@@ -21,28 +18,26 @@ registerCommand('قسم_تحميل', async (ctx) => {
         }
 
         let text = `✨ ───『 *أوامر قسم التحميلات ⬇️* 』─── ✨\n\n`;
-        text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
+        text += `📥 *حمّل من أي منصة بسهولة وسرعة!*\n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         categoryCmds.forEach(c => {
-            text += `🔹 *[ ${config.prefix}${c.name} ]*\n   └─ 📝 ${c.description}\n\n`;
+            text += `  ⚡ *${config.prefix}${c.name}*\n   └─ 📝 ${c.description}\n\n`;
         });
-        text += `━━━━━━━━━━━━━━━━━━━━\n`;
-        text += `🔙 أرسل *${config.prefix}المنيو* للرجوع للقائمة الرئيسية.`;
+        text += `━━━━━━━━━━━━━━━━━━━━`;
 
-        const bannerPath = './assets/menu_banner.png';
-        if (fs.existsSync(bannerPath)) {
-            await ctx.sock.sendMessage(ctx.from, {
-                image: fs.readFileSync(bannerPath),
-                caption: text
-            }, { quoted: ctx.msg });
-        } else {
-            await ctx.reply(text);
-        }
+        const buttons = [
+            { text: '▶️ يوتيوب', id: `${config.prefix}يوتيوب` },
+            { text: '🎵 تيك توك', id: `${config.prefix}تيك_توك` },
+            { text: '📸 انستا', id: `${config.prefix}انستا` },
+            { text: '🔙 القائمة الرئيسية', id: `${config.prefix}المنيو` }
+        ];
+
+        await ctx.sendButtons(text, `${config.botName} © 2026`, buttons);
     } catch (err) {
         console.error("فشل إرسال قسم التحميلات:", err);
         await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم التحميلات.");
     }
 }, {
-    description: 'عرض أوامر قسم التحميلات بشكل نصي منسق',
+    description: 'عرض أوامر قسم التحميلات مع أزرار تفاعلية',
     category: '⬇️ تحميلات'
 });

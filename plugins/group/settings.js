@@ -1,11 +1,17 @@
 import { registerCommand } from '../../lib/handler.js';
 import { database } from '../../lib/db.js';
+import config from '../../config.js';
 
 // 🛡️ حماية الروابط
 registerCommand('روابط', async (ctx) => {
     const action = ctx.args[0];
     if (!action || (action !== 'تفعيل' && action !== 'تعطيل')) {
-        return ctx.reply('⚠️ الرجاء استخدام الأمر كالتالي:\n*.روابط تفعيل* (لتشغيل حماية الروابط)\n*.روابط تعطيل* (لإيقاف حماية الروابط)');
+        const text = `🛡️ *إعدادات حماية الروابط (Anti-Link)*\n\nيرجى الاختيار من الأزرار بالأسفل لتفعيل أو تعطيل حماية الروابط في المجموعة:`;
+        const buttons = [
+            { text: '✅ تفعيل الحماية', id: `${config.prefix}روابط تفعيل` },
+            { text: '❌ تعطيل الحماية', id: `${config.prefix}روابط تعطيل` }
+        ];
+        return await ctx.sendButtons(text, `${config.botName} Protection`, buttons);
     }
     const isEnable = action === 'تفعيل';
     database.updateGroup(ctx.from, { antiLink: isEnable });
@@ -21,7 +27,12 @@ registerCommand('روابط', async (ctx) => {
 registerCommand('سبام', async (ctx) => {
     const action = ctx.args[0];
     if (!action || (action !== 'تفعيل' && action !== 'تعطيل')) {
-        return ctx.reply('⚠️ الرجاء استخدام الأمر كالتالي:\n*.سبام تفعيل* (لتشغيل حماية السبام والسيل المزعج)\n*.سبام تعطيل* (لإيقاف حماية السبام)');
+        const text = `🛡️ *إعدادات حماية السبام والرسائل المزعجة (Anti-Spam)*\n\nيرجى الاختيار لتفعيل أو تعطيل حماية المجموعات من السبام:`;
+        const buttons = [
+            { text: '✅ تفعيل الحماية', id: `${config.prefix}سبام تفعيل` },
+            { text: '❌ تعطيل الحماية', id: `${config.prefix}سبام تعطيل` }
+        ];
+        return await ctx.sendButtons(text, `${config.botName} Protection`, buttons);
     }
     const isEnable = action === 'تفعيل';
     database.updateGroup(ctx.from, { antiSpam: isEnable });
@@ -37,7 +48,12 @@ registerCommand('سبام', async (ctx) => {
 registerCommand('شتم', async (ctx) => {
     const action = ctx.args[0];
     if (!action || (action !== 'تفعيل' && action !== 'تعطيل')) {
-        return ctx.reply('⚠️ الرجاء استخدام الأمر كالتالي:\n*.شتم تفعيل* (لتشغيل كشف وحذف الشتائم)\n*.شتم تعطيل* (لإيقاف كشف وحذف الشتائم)');
+        const text = `🛡️ *إعدادات تصفية الشتائم والكلمات البذيئة (Anti-Badword)*\n\nيرجى الاختيار لتفعيل أو تعطيل تصفية وحذف الكلمات البذيئة في المجموعة:`;
+        const buttons = [
+            { text: '✅ تفعيل الفلترة', id: `${config.prefix}شتم تفعيل` },
+            { text: '❌ تعطيل الفلترة', id: `${config.prefix}شتم تعطيل` }
+        ];
+        return await ctx.sendButtons(text, `${config.botName} Protection`, buttons);
     }
     const isEnable = action === 'تفعيل';
     database.updateGroup(ctx.from, { antiBadwords: isEnable });
@@ -53,7 +69,12 @@ registerCommand('شتم', async (ctx) => {
 registerCommand('مضاد_حذف', async (ctx) => {
     const action = ctx.args[0];
     if (!action || (action !== 'تفعيل' && action !== 'تعطيل')) {
-        return ctx.reply('⚠️ الرجاء استخدام الأمر كالتالي:\n*.مضاد_حذف تفعيل* (لتشغيل كشف الرسائل المحذوفة)\n*.مضاد_حذف تعطيل* (لإيقاف كشف المحذوفات)');
+        const text = `🛡️ *إعدادات مضاد حذف الرسائل (Anti-Delete)*\n\nيرجى الاختيار لتفعيل أو تعطيل إرسال الرسائل بعد حذفها:`;
+        const buttons = [
+            { text: '✅ تفعيل المضاد', id: `${config.prefix}مضاد_حذف تفعيل` },
+            { text: '❌ تعطيل المضاد', id: `${config.prefix}مضاد_حذف تعطيل` }
+        ];
+        return await ctx.sendButtons(text, `${config.botName} Protection`, buttons);
     }
     const isEnable = action === 'تفعيل';
     database.updateGroup(ctx.from, { antiDelete: isEnable });
@@ -69,7 +90,12 @@ registerCommand('مضاد_حذف', async (ctx) => {
 registerCommand('تذكير', async (ctx) => {
     const action = ctx.args[0];
     if (!action || (action !== 'تفعيل' && action !== 'تعطيل')) {
-        return ctx.reply('⚠️ الرجاء استخدام الأمر كالتالي:\n*.تذكير تفعيل* (لتشغيل الأذكار التلقائية كل 30 دقيقة)\n*.تذكير تعطيل* (لإيقاف الأذكار التلقائية)');
+        const text = `🕌 *إعدادات التذكير التلقائي بالأذكار والآيات*\n\nيرجى الاختيار لتفعيل أو تعطيل التذكير التلقائي كل 30 دقيقة:`;
+        const buttons = [
+            { text: '✅ تفعيل التذكير', id: `${config.prefix}تذكير تفعيل` },
+            { text: '❌ تعطيل التذكير', id: `${config.prefix}تذكير تعطيل` }
+        ];
+        return await ctx.sendButtons(text, `${config.botName} Protection`, buttons);
     }
     const isEnable = action === 'تفعيل';
     database.updateGroup(ctx.from, { autoAdhkar: isEnable });

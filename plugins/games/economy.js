@@ -95,26 +95,13 @@ registerCommand('بروفايل', async (ctx) => {
     if (user.partner) mentions.push(user.partner);
 
     const buttons = [
-        { id: '.عمل', text: '💼 اذهب للعمل' },
-        { id: '.تعدين', text: '⛏️ تعدين الذهب' },
-        { id: '.متجر', text: '🛒 المتجر الافتراضي' }
+        { text: '💼 اذهب للعمل', id: '.عمل' },
+        { text: '⛏️ تعدين الذهب', id: '.تعدين' },
+        { text: '🛒 المتجر الافتراضي', id: '.متجر' }
     ];
 
-    await ctx.sock.sendMessage(ctx.from, {
-        text: `⚔️ ─── *${config.botName}* ─── ⚔️\n\n` + profileText + `\n\n━━━━━━━━━━━━━━━━━\n📌 *أزرار الاختيار السريع:*`,
-        footer: 'أظهر قوتك وثروتك أمام الأبطال الآخرين!',
-        buttons: buttons.map(b => ({ buttonId: b.id, buttonText: { displayText: b.text }, type: 1 })),
-        headerType: 1,
-        mentions
-    }, { quoted: ctx.msg }).catch(async () => {
-        // Fallback text
-        let fallbackText = `⚔️ ─── *${config.botName}* ─── ⚔️\n\n` + profileText + `\n\n━━━━━━━━━━━━━━━━━\n📌 *خيارات التحكم السريع:*\n`;
-        buttons.forEach(b => {
-            fallbackText += `🔹 [ ${b.text} ] ➔ اكتب *${b.id}*\n`;
-        });
-        fallbackText += `━━━━━━━━━━━━━━━━━`;
-        await ctx.sock.sendMessage(ctx.from, { text: fallbackText, mentions }, { quoted: ctx.msg });
-    });
+    const profileHeader = `⚔️ ─── *${config.botName}* ─── ⚔️\n\n` + profileText;
+    await ctx.sendButtons(profileHeader, 'أظهر قوتك وثروتك أمام الأبطال الآخرين!', buttons, { mentions });
 }, {
     description: 'عرض بروفايلك الشخصي المطور وعتادك الحربي وصحتك وثروتك',
     category: '🎮 ألعاب وتسلية'
@@ -143,11 +130,11 @@ registerCommand('يومي', async (ctx) => {
     dailyText += `محفظتك الحالية: *${formatNumber(user.wallet + reward)}* ذهبة.`;
 
     const buttons = [
-        { id: '.بروفايل', text: '📊 بروفايلي' },
-        { id: '.متجر', text: '🛒 المتجر الافتراضي' }
+        { text: '📊 بروفايلي', id: '.بروفايل' },
+        { text: '🛒 المتجر الافتراضي', id: '.متجر' }
     ];
 
-    await ctx.replyWithButtons(dailyText, 'احرص على المطالبة بذهبك كل يوم للاستمرار بالتطور!', buttons);
+    await ctx.sendButtons(dailyText, 'احرص على المطالبة بذهبك كل يوم للاستمرار بالتطور!', buttons);
 }, {
     description: 'المطالبة بالذهب والهدية اليومية المجانية من البوت',
     category: '🎮 ألعاب وتسلية'
@@ -182,11 +169,11 @@ registerCommand('ايداع', async (ctx) => {
     depositText += `🏦 حسابك البنكي: *${formatNumber(user.bank + amount)}*`;
 
     const buttons = [
-        { id: '.سحب الكل', text: '💸 سحب كل الأموال' },
-        { id: '.بروفايل', text: '📊 بروفايلي' }
+        { text: '💸 سحب كل الأموال', id: '.سحب الكل' },
+        { text: '📊 بروفايلي', id: '.بروفايل' }
     ];
 
-    await ctx.replyWithButtons(depositText, 'الذهب المودع في البنك محمي تماماً من سرقات اللصوص!', buttons);
+    await ctx.sendButtons(depositText, 'الذهب المودع في البنك محمي تماماً من سرقات اللصوص!', buttons);
 }, {
     description: 'إيداع الذهب في البنك لحمايته بالكامل من اللصوص والسرقة',
     category: '🎮 ألعاب وتسلية'
@@ -221,11 +208,11 @@ registerCommand('سحب', async (ctx) => {
     withdrawText += `🏦 حسابك البنكي: *${formatNumber(user.bank - amount)}*`;
 
     const buttons = [
-        { id: '.متجر', text: '🛒 المتجر الافتراضي' },
-        { id: '.بروفايل', text: '📊 بروفايلي' }
+        { text: '🛒 المتجر الافتراضي', id: '.متجر' },
+        { text: '📊 بروفايلي', id: '.بروفايل' }
     ];
 
-    await ctx.replyWithButtons(withdrawText, 'استخدم الذهب المسحوب بحكمة لتطوير عتادك!', buttons);
+    await ctx.sendButtons(withdrawText, 'استخدم الذهب المسحوب بحكمة لتطوير عتادك!', buttons);
 }, {
     description: 'سحب الذهب من البنك إلى محفظتك لاستخدامه في الشراء',
     category: '🎮 ألعاب وتسلية'

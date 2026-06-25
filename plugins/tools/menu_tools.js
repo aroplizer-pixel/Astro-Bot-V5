@@ -21,28 +21,32 @@ registerCommand('قسم_ادوات', async (ctx) => {
         }
 
         let text = `✨ ───『 *أوامر قسم الأدوات المساعدة 🛠️* 』─── ✨\n\n`;
-        text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
+        text += `🔹 *مجموعة الأدوات المساعدة لتسهيل مهامك اليومية:* \n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         categoryCmds.forEach(c => {
-            text += `🔹 *[ ${config.prefix}${c.name} ]*\n   └─ 📝 ${c.description}\n\n`;
+            text += `  ⚡ *${config.prefix}${c.name}*\n   └─ 📝 ${c.description}\n\n`;
         });
-        text += `━━━━━━━━━━━━━━━━━━━━\n`;
-        text += `🔙 أرسل *${config.prefix}المنيو* للرجوع للقائمة الرئيسية.`;
+        text += `━━━━━━━━━━━━━━━━━━━━`;
+
+        const buttons = [
+            { text: '🧮 حاسبة', id: `${config.prefix}حاسبة` },
+            { text: '☀️ طقس', id: `${config.prefix}طقس` },
+            { text: '🌐 ترجمة', id: `${config.prefix}ترجمة` },
+            { text: '🔙 القائمة الرئيسية', id: `${config.prefix}المنيو` }
+        ];
 
         const bannerPath = './assets/menu_banner.png';
         if (fs.existsSync(bannerPath)) {
-            await ctx.sock.sendMessage(ctx.from, {
-                image: fs.readFileSync(bannerPath),
-                caption: text
-            }, { quoted: ctx.msg });
+            const imageBuffer = fs.readFileSync(bannerPath);
+            await ctx.sendButtonsWithImage(imageBuffer, text, `${config.botName} © 2026`, buttons);
         } else {
-            await ctx.reply(text);
+            await ctx.sendButtons(text, `${config.botName} © 2026`, buttons);
         }
     } catch (err) {
         console.error("فشل إرسال قسم الأدوات:", err);
         await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم الأدوات.");
     }
 }, {
-    description: 'عرض أوامر قسم الأدوات المساعدة بشكل نصي منسق',
+    description: 'عرض أوامر قسم الأدوات المساعدة مع أزرار تفاعلية',
     category: '🛠️ أدوات'
 });

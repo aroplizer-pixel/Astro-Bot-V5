@@ -1,6 +1,5 @@
 import { registerCommand, commands } from '../../lib/handler.js';
 import config from '../../config.js';
-import fs from 'fs';
 
 registerCommand('قسم_ذكاء', async (ctx) => {
     try {
@@ -21,28 +20,26 @@ registerCommand('قسم_ذكاء', async (ctx) => {
         }
 
         let text = `✨ ───『 *أوامر قسم الذكاء الاصطناعي 🧠* 』─── ✨\n\n`;
-        text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
+        text += `🤖 *تحدث مع الذكاء الاصطناعي واستمتع بقدرات خارقة!*\n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         categoryCmds.forEach(c => {
-            text += `🔹 *[ ${config.prefix}${c.name} ]*\n   └─ 📝 ${c.description}\n\n`;
+            text += `  ⚡ *${config.prefix}${c.name}*\n   └─ 📝 ${c.description}\n\n`;
         });
-        text += `━━━━━━━━━━━━━━━━━━━━\n`;
-        text += `🔙 أرسل *${config.prefix}المنيو* للرجوع للقائمة الرئيسية.`;
+        text += `━━━━━━━━━━━━━━━━━━━━`;
 
-        const bannerPath = './assets/menu_banner.png';
-        if (fs.existsSync(bannerPath)) {
-            await ctx.sock.sendMessage(ctx.from, {
-                image: fs.readFileSync(bannerPath),
-                caption: text
-            }, { quoted: ctx.msg });
-        } else {
-            await ctx.reply(text);
-        }
+        const buttons = [
+            { text: '🧠 تحدث مع الذكاء', id: `${config.prefix}ذكاء` },
+            { text: '🌐 ترجمة نص', id: `${config.prefix}ترجمة` },
+            { text: '📝 تلخيص', id: `${config.prefix}تلخيص` },
+            { text: '🔙 القائمة الرئيسية', id: `${config.prefix}المنيو` }
+        ];
+
+        await ctx.sendButtons(text, `${config.botName} © 2026`, buttons);
     } catch (err) {
         console.error("فشل إرسال قسم الذكاء:", err);
         await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم الذكاء.");
     }
 }, {
-    description: 'عرض أوامر قسم الذكاء الاصطناعي والـ AI بشكل نصي منسق',
+    description: 'عرض أوامر قسم الذكاء الاصطناعي مع أزرار تفاعلية',
     category: '🧠 ذكاء اصطناعي'
 });

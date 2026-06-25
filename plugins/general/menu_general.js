@@ -21,28 +21,30 @@ registerCommand('قسم_عام', async (ctx) => {
         }
 
         let text = `✨ ───『 *أوامر القسم العام والإعدادات ⚙️* 』─── ✨\n\n`;
-        text += `🔹 *الأوامر والوظائف المتاحة في هذا القسم:* \n`;
+        text += `⚙️ *الأوامر الأساسية والإعدادات وفحص حالة الاتصال:* \n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         categoryCmds.forEach(c => {
-            text += `🔹 *[ ${config.prefix}${c.name} ]*\n   └─ 📝 ${c.description}\n\n`;
+            text += `  ⚡ *${config.prefix}${c.name}*\n   └─ 📝 ${c.description}\n\n`;
         });
-        text += `━━━━━━━━━━━━━━━━━━━━\n`;
-        text += `🔙 أرسل *${config.prefix}المنيو* للرجوع للقائمة الرئيسية.`;
+        text += `━━━━━━━━━━━━━━━━━━━━`;
+
+        const buttons = [
+            { text: '⚡ سرعة البوت', id: `${config.prefix}بنج` },
+            { text: '🔙 القائمة الرئيسية', id: `${config.prefix}المنيو` }
+        ];
 
         const bannerPath = './assets/menu_banner.png';
         if (fs.existsSync(bannerPath)) {
-            await ctx.sock.sendMessage(ctx.from, {
-                image: fs.readFileSync(bannerPath),
-                caption: text
-            }, { quoted: ctx.msg });
+            const imageBuffer = fs.readFileSync(bannerPath);
+            await ctx.sendButtonsWithImage(imageBuffer, text, `${config.botName} © 2026`, buttons);
         } else {
-            await ctx.reply(text);
+            await ctx.sendButtons(text, `${config.botName} © 2026`, buttons);
         }
     } catch (err) {
         console.error("فشل إرسال قسم العام:", err);
         await ctx.reply("❌ حدث خطأ أثناء عرض أوامر قسم العام.");
     }
 }, {
-    description: 'عرض أوامر القسم العام والإعدادات العامة بشكل نصي منسق',
+    description: 'عرض أوامر القسم العام والإعدادات العامة مع أزرار تفاعلية',
     category: '⚙️ عام'
 });
